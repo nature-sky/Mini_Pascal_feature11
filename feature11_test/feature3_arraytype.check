@@ -1,0 +1,84 @@
+(program [offset=12]
+ (decllist
+   (decl->program: |feature|
+     number: 1, scope: 1))
+ (block [offset=0]
+   (decllist
+     (decl->variable: |a|
+       (type->size=400, kind=array:
+         (type->size=4, kind=subrange:
+           (expr->[value=0][rhs] int: 0
+             expr_type->(type->size=4, kind=INTEGER))
+           (expr->[value=9][rhs] int: 9
+             expr_type->(type->size=4, kind=INTEGER)))
+         (type->size=40, kind=array:
+           (type->size=4, kind=subrange:
+             (expr->[value=0][rhs] int: 0
+               expr_type->(type->size=4, kind=INTEGER))
+             (expr->[value=9][rhs] int: 9
+               expr_type->(type->size=4, kind=INTEGER)))
+           (type->size=4, kind=INTEGER)))
+       number: 1, scope: 2))
+   (stmtlist
+     (stmt->assignstmt:
+       (expr->[lhs] binexp: op([)
+         (expr->[lhs] binexp: op([)
+           (expr->[lhs] binding: |a|, number: 1, scope: 2
+             expr_type->(type->size=400, kind=array:
+               (type->size=4, kind=subrange:
+                 (expr->[value=0][rhs] int: 0
+                   expr_type->(type->size=4, kind=INTEGER))
+                 (expr->[value=9][rhs] int: 9
+                   expr_type->(type->size=4, kind=INTEGER)))
+               (type->size=40, kind=array:
+                 (type->size=4, kind=subrange:
+                   (expr->[value=0][rhs] int: 0
+                     expr_type->(type->size=4, kind=INTEGER))
+                   (expr->[value=9][rhs] int: 9
+                     expr_type->(type->size=4, kind=INTEGER)))
+                 (type->size=4, kind=INTEGER))))
+           (expr->[value=0][rhs] int: 0
+             expr_type->(type->size=4, kind=INTEGER))
+           expr_type->(type->size=40, kind=array:
+             (type->size=4, kind=subrange:
+               (expr->[value=0][rhs] int: 0
+                 expr_type->(type->size=4, kind=INTEGER))
+               (expr->[value=9][rhs] int: 9
+                 expr_type->(type->size=4, kind=INTEGER)))
+             (type->size=4, kind=INTEGER)))
+         (expr->[value=0][rhs] int: 0
+           expr_type->(type->size=4, kind=INTEGER))
+         expr_type->(type->size=4, kind=INTEGER))
+       (expr->[value=10][rhs] int: 10
+         expr_type->(type->size=4, kind=INTEGER)))
+     (stmt->callstmt:
+       (expr->[rhs] call: |writeln|, number: 1, scope: 0
+         (exprlist
+           (expr->[rhs] binexp: op([)
+             (expr->[rhs] binexp: op([)
+               (expr->[rhs] binding: |a|, number: 1, scope: 2
+                 expr_type->(type->size=400, kind=array:
+                   (type->size=4, kind=subrange:
+                     (expr->[value=0][rhs] int: 0
+                       expr_type->(type->size=4, kind=INTEGER))
+                     (expr->[value=9][rhs] int: 9
+                       expr_type->(type->size=4, kind=INTEGER)))
+                   (type->size=40, kind=array:
+                     (type->size=4, kind=subrange:
+                       (expr->[value=0][rhs] int: 0
+                         expr_type->(type->size=4, kind=INTEGER))
+                       (expr->[value=9][rhs] int: 9
+                         expr_type->(type->size=4, kind=INTEGER)))
+                     (type->size=4, kind=INTEGER))))
+               (expr->[value=0][rhs] int: 0
+                 expr_type->(type->size=4, kind=INTEGER))
+               expr_type->(type->size=40, kind=array:
+                 (type->size=4, kind=subrange:
+                   (expr->[value=0][rhs] int: 0
+                     expr_type->(type->size=4, kind=INTEGER))
+                   (expr->[value=9][rhs] int: 9
+                     expr_type->(type->size=4, kind=INTEGER)))
+                 (type->size=4, kind=INTEGER)))
+             (expr->[value=0][rhs] int: 0
+               expr_type->(type->size=4, kind=INTEGER))
+             expr_type->(type->size=4, kind=INTEGER))))))))

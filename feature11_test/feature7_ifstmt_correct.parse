@@ -1,0 +1,24 @@
+(program
+ (decllist
+   (decl->program: |feature|))
+ (block
+   (decllist
+     (decl->variable: |n|
+       (type->size=0, kind=ident: |integer|)))
+   (stmtlist
+     (stmt->ifstmt:
+       (expr->[rhs] binding: |false|)
+       (stmt->callstmt:
+         (expr->[rhs] call: |writeln|
+           (exprlist
+             (expr->[value=10][rhs] int: 10
+               expr_type->(type->size=4, kind=INTEGER)))))
+       (else
+         (stmt->assignstmt:
+           (expr->[rhs] binding: |n|)
+           (expr->[value=99][rhs] int: 99
+             expr_type->(type->size=4, kind=INTEGER)))))
+     (stmt->callstmt:
+       (expr->[rhs] call: |writeln|
+         (exprlist
+           (expr->[rhs] binding: |n|)))))))

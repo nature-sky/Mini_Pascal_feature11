@@ -1,0 +1,40 @@
+(program [offset=12]
+ (decllist
+   (decl->program: |feature|
+     number: 1, scope: 1))
+ (block [offset=0]
+   (decllist
+     (decl->variable: |a|
+       (type->size=4, kind=INTEGER)
+       number: 1, scope: 2)
+     (decl->variable: |sum|
+       (type->size=4, kind=INTEGER)
+       number: 2, scope: 2))
+   (stmtlist
+     (stmt->assignstmt:
+       (expr->[lhs] binding: |sum|, number: 2, scope: 2
+         expr_type->(type->size=4, kind=INTEGER))
+       (expr->[value=10][rhs] int: 10
+         expr_type->(type->size=4, kind=INTEGER)))
+     (stmt->forstmt: |a|, number: 1, scope: 2
+       (expr->[value=10][rhs] int: 10
+         expr_type->(type->size=4, kind=INTEGER))
+       (expr->[value=20][rhs] int: 20
+         expr_type->(type->size=4, kind=INTEGER))
+       (upward:1)
+       (stmt->compoundstmt:
+         (stmtlist
+           (stmt->assignstmt:
+             (expr->[lhs] binding: |sum|, number: 2, scope: 2
+               expr_type->(type->size=4, kind=INTEGER))
+             (expr->[rhs] binexp: op(+)
+               (expr->[rhs] binding: |sum|, number: 2, scope: 2
+                 expr_type->(type->size=4, kind=INTEGER))
+               (expr->[rhs] binding: |a|, number: 1, scope: 2
+                 expr_type->(type->size=4, kind=INTEGER))
+               expr_type->(type->size=4, kind=INTEGER))))))
+     (stmt->callstmt:
+       (expr->[rhs] call: |writeln|, number: 1, scope: 0
+         (exprlist
+           (expr->[rhs] binding: |sum|, number: 2, scope: 2
+             expr_type->(type->size=4, kind=INTEGER))))))))

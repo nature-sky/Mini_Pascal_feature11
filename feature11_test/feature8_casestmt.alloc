@@ -1,0 +1,40 @@
+(program [offset=12]
+ (decllist
+   (decl->program: |feature|
+     number: 1, scope: 1))
+ (block [offset=-4]
+   (decllist
+     (decl->variable: |n|
+       (type->size=4, kind=INTEGER)
+       [lev=1,off=-4,ind=0,tmp=0]
+       number: 1, scope: 2))
+   (stmtlist
+     (stmt->assignstmt:
+       (expr->[lev=1,off=-4,ind=0,tmp=0][lhs] binding: |n|, number: 1, scope: 2
+         expr_type->(type->size=4, kind=INTEGER))
+       (expr->[value=2][rhs/later] int: 2
+         expr_type->(type->size=4, kind=INTEGER)))
+     (stmt->casestmt:
+       (expr->[lev=1,off=-4,ind=0,tmp=0][rhs/regcnt=1/reg=eax] binding: |n|, number: 1, scope: 2
+         expr_type->(type->size=4, kind=INTEGER))
+       (caselist
+         (labellist
+           (expr->[value=0][rhs] int: 0
+             expr_type->(type->size=4, kind=INTEGER)))
+         (stmt->callstmt:
+           (expr->[rhs] call: |write|, number: 2, scope: 0
+             (exprlist
+               (expr->[value='0'][rhs/regcnt=1] string: '0'
+                 expr_type->(type->size=0, kind=STRING)))))
+         (labellist
+           (expr->[value=1][rhs] int: 1
+             expr_type->(type->size=4, kind=INTEGER))
+           (expr->[value=2][rhs] int: 2
+             expr_type->(type->size=4, kind=INTEGER))
+           (expr->[value=3][rhs] int: 3
+             expr_type->(type->size=4, kind=INTEGER)))
+         (stmt->callstmt:
+           (expr->[rhs] call: |write|, number: 2, scope: 0
+             (exprlist
+               (expr->[value='other'][rhs/regcnt=1] string: 'other'
+                 expr_type->(type->size=0, kind=STRING))))))))))

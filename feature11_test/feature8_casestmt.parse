@@ -1,0 +1,35 @@
+(program
+ (decllist
+   (decl->program: |feature|))
+ (block
+   (decllist
+     (decl->variable: |n|
+       (type->size=0, kind=ident: |integer|)))
+   (stmtlist
+     (stmt->assignstmt:
+       (expr->[rhs] binding: |n|)
+       (expr->[value=2][rhs] int: 2
+         expr_type->(type->size=4, kind=INTEGER)))
+     (stmt->casestmt:
+       (expr->[rhs] binding: |n|)
+       (caselist
+         (labellist
+           (expr->[value=0][rhs] int: 0
+             expr_type->(type->size=4, kind=INTEGER)))
+         (stmt->callstmt:
+           (expr->[rhs] call: |write|
+             (exprlist
+               (expr->[value='0'][rhs] string: '0'
+                 expr_type->(type->size=0, kind=STRING)))))
+         (labellist
+           (expr->[value=1][rhs] int: 1
+             expr_type->(type->size=4, kind=INTEGER))
+           (expr->[value=2][rhs] int: 2
+             expr_type->(type->size=4, kind=INTEGER))
+           (expr->[value=3][rhs] int: 3
+             expr_type->(type->size=4, kind=INTEGER)))
+         (stmt->callstmt:
+           (expr->[rhs] call: |write|
+             (exprlist
+               (expr->[value='other'][rhs] string: 'other'
+                 expr_type->(type->size=0, kind=STRING))))))))))

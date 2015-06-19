@@ -1,0 +1,2898 @@
+State 194 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: Program $end
+
+    1 Program: PROGRAM_ ID_ ';' Block '.'
+
+    2 Block: OptDefinitionParts BEGIN_ Statements END_
+
+    3 OptDefinitionParts: %empty
+    4                   | DefinitionParts
+
+    5 DefinitionParts: CONST_ ConstantDefinitions
+    6                | VAR_ VariableDeclaration
+    7                | TYPE_ TypeDefinitions
+    8                | ProcedureDeclaration OptDefinitionParts
+    9                | FunctionDeclaration OptDefinitionParts
+
+   10 ConstantDefinitions: ConstantDefinition OptConstantDefinitions
+
+   11 OptConstantDefinitions: ConstantDefinitions
+   12                       | OptDefinitionParts
+
+   13 ConstantDefinition: ID_ '=' Constant ';'
+   14                   | error ';'
+
+   15 TypeDefinitions: TypeDefinition OptTypeDefinitions
+
+   16 OptTypeDefinitions: TypeDefinitions
+   17                   | OptDefinitionParts
+
+   18 TypeDefinition: ID_ '=' Type ';'
+   19               | error ';'
+
+   20 VariableDeclaration: ID_ ':' Type ';' OptVariableDeclarations
+   21                    | ID_ ',' VariableDeclaration
+   22                    | error ';'
+
+   23 OptVariableDeclarations: VariableDeclaration
+   24                        | OptDefinitionParts
+
+   25 Constant: UnsignedConstant
+   26         | Sign UnsignedConstant
+   27         | TEXT_
+
+   28 UnsignedConstant: INT_
+   29                 | ID_
+
+   30 Sign: '+'
+   31     | '-'
+
+   32 Type: SimpleType
+   33     | ARRAY_ '[' SimpleType EltType
+   34     | RECORD_ FieldList END_
+   35     | RECORD_ END_
+   36     | '^' ID_
+   37     | error
+
+   38 EltType: ']' OF_ Type
+   39        | ',' SimpleType EltType
+
+   40 SimpleType: ID_
+   41           | Constant DOT_DOT_ Constant
+   42           | '(' IdList ')'
+
+   43 IdList: ID_
+   44       | ID_ ',' IdList
+
+   45 FieldList: ID_ ':' Type OptFieldList
+   46          | ID_ ',' FieldList
+   47          | error
+
+   48 OptFieldList: %empty
+   49             | ';'
+   50             | ';' FieldList
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ OptFormalParameters ';' Block ';'
+
+   52 OptFormalParameters: %empty
+   53                    | '(' ParameterGroup ')'
+   54                    | '(' error ')'
+
+   55 $@1: %empty
+
+   56 ParameterGroup: OptVar $@1 Parameters
+
+   57 @2: %empty
+
+   58 Parameters: ID_ ':' ID_ @2 OptParameterGroup
+   59           | ID_ ',' Parameters
+
+   60 OptParameterGroup: %empty
+   61                  | ';' ParameterGroup
+
+   62 OptVar: %empty
+   63       | VAR_
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' ID_ ';' Block ';'
+
+   65 Statement: %empty
+   66          | Variable COLON_EQ_ Expression
+   67          | CompoundStatement
+   68          | IfStatement
+   69          | WhileStatement
+   70          | Variable
+   71          | CaseStatement
+   72          | RepeatStatement
+   73          | ForStatement
+   74          | error
+
+   75 Variable: LimitedVar
+   76         | ID_ '(' Expression OptExprs ')'
+
+   77 OptExprs: %empty
+   78         | ',' Expression OptExprs
+
+   79 LimitedVar: SubVar Expression ']'
+   80           | LimitedVar '.' ID_
+   81           | LimitedVar '^'
+   82           | ID_
+
+   83 SubVar: LimitedVar '['
+   84       | SubVar Expression ','
+
+   85 Expression: SimpleExpression
+   86           | SimpleExpression RelOp SimpleExpression
+
+   87 RelOp: '='
+   88      | NE_
+   89      | '<'
+   90      | LE_
+   91      | GE_
+   92      | '>'
+
+   93 SimpleExpression: Term
+   94                 | Sign Term
+   95                 | SimpleExpression AddOp Term
+
+   96 AddOp: '+'
+   97      | '-'
+   98      | OR_
+
+   99 Term: Factor
+  100     | Term MultOp Factor
+
+  101 MultOp: '*'
+  102       | DIV_
+  103       | MOD_
+  104       | AND_
+
+  105 Factor: Variable
+  106       | '(' Expression ')'
+  107       | '(' error ')'
+  108       | NOT_ Factor
+  109       | INT_
+  110       | TEXT_
+  111       | NIL_
+
+  112 CompoundStatement: BEGIN_ Statements END_
+
+  113 Statements: Statement
+  114           | Statement ';' Statements
+
+  115 IfStatement: IF_ Expression THEN_ Statement OptElse
+
+  116 OptElse: %empty
+  117        | ELSE_ Statement
+
+  118 CaseStatement: CASE_ Expression OF_ CaseListElements END_
+
+  119 CaseListElements: CaseListElement OptCaseListElements
+
+  120 OptCaseListElements: %empty
+  121                    | ';'
+  122                    | ';' CaseListElements
+
+  123 CaseListElement: CaseLabelList ':' Statement
+  124                | error
+
+  125 CaseLabelList: Constant
+  126              | Constant ',' CaseLabelList
+
+  127 WhileStatement: WHILE_ Expression DO_ Statement
+
+  128 RepeatStatement: REPEAT_ Statements UNTIL_ Expression
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression Direction Expression DO_ Statement
+
+  130 Direction: TO_
+  131          | DOWNTO_
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 42 53 54 76 106 107
+')' (41) 42 53 54 76 106 107
+'*' (42) 101
+'+' (43) 30 96
+',' (44) 21 39 44 46 59 78 84 126
+'-' (45) 31 97
+'.' (46) 1 80
+':' (58) 20 45 58 64 123
+';' (59) 1 13 14 18 19 20 22 49 50 51 61 64 114 121 122
+'<' (60) 89
+'=' (61) 13 18 87
+'>' (62) 92
+'[' (91) 33 83
+']' (93) 38 79
+'^' (94) 36 81
+error (256) 14 19 22 37 47 54 74 107 124
+INT_ (258) 28 109
+TEXT_ (259) 27 110
+ID_ (260) 1 13 18 20 21 29 36 40 43 44 45 46 51 58 59 64 76 80 82 129
+AND_ (261) 104
+DIV_ (262) 102
+DOWNTO_ (263) 131
+GE_ (264) 91
+LE_ (265) 90
+MOD_ (266) 103
+NE_ (267) 88
+NOT_ (268) 108
+OR_ (269) 98
+TO_ (270) 130
+ARRAY_ (271) 33
+BEGIN_ (272) 2 112
+CASE_ (273) 118
+CONST_ (274) 5
+DO_ (275) 127 129
+ELSE_ (276) 117
+END_ (277) 2 34 35 112 118
+FOR_ (278) 129
+FUNCTION_ (279) 64
+IF_ (280) 115
+NIL_ (281) 111
+OF_ (282) 38 118
+PROCEDURE_ (283) 51
+PROGRAM_ (284) 1
+RECORD_ (285) 34 35
+REPEAT_ (286) 128
+THEN_ (287) 115
+TYPE_ (288) 7
+UNTIL_ (289) 128
+VAR_ (290) 6 63
+WHILE_ (291) 127
+COLON_EQ_ (292) 66 129
+DOT_DOT_ (293) 41
+
+
+Nonterminals, with rules where they appear
+
+$accept (54)
+    on left: 0
+Program (55)
+    on left: 1, on right: 0
+Block (56)
+    on left: 2, on right: 1 51 64
+OptDefinitionParts (57)
+    on left: 3 4, on right: 2 8 9 12 17 24
+DefinitionParts (58)
+    on left: 5 6 7 8 9, on right: 4
+ConstantDefinitions (59)
+    on left: 10, on right: 5 11
+OptConstantDefinitions (60)
+    on left: 11 12, on right: 10
+ConstantDefinition (61)
+    on left: 13 14, on right: 10
+TypeDefinitions (62)
+    on left: 15, on right: 7 16
+OptTypeDefinitions (63)
+    on left: 16 17, on right: 15
+TypeDefinition (64)
+    on left: 18 19, on right: 15
+VariableDeclaration (65)
+    on left: 20 21 22, on right: 6 21 23
+OptVariableDeclarations (66)
+    on left: 23 24, on right: 20
+Constant (67)
+    on left: 25 26 27, on right: 13 41 125 126
+UnsignedConstant (68)
+    on left: 28 29, on right: 25 26
+Sign (69)
+    on left: 30 31, on right: 26 94
+Type (70)
+    on left: 32 33 34 35 36 37, on right: 18 20 38 45
+EltType (71)
+    on left: 38 39, on right: 33 39
+SimpleType (72)
+    on left: 40 41 42, on right: 32 33 39
+IdList (73)
+    on left: 43 44, on right: 42 44
+FieldList (74)
+    on left: 45 46 47, on right: 34 46 50
+OptFieldList (75)
+    on left: 48 49 50, on right: 45
+ProcedureDeclaration (76)
+    on left: 51, on right: 8
+OptFormalParameters (77)
+    on left: 52 53 54, on right: 51 64
+ParameterGroup (78)
+    on left: 56, on right: 53 61
+$@1 (79)
+    on left: 55, on right: 56
+Parameters (80)
+    on left: 58 59, on right: 56 59
+@2 (81)
+    on left: 57, on right: 58
+OptParameterGroup (82)
+    on left: 60 61, on right: 58
+OptVar (83)
+    on left: 62 63, on right: 56
+FunctionDeclaration (84)
+    on left: 64, on right: 9
+Statement (85)
+    on left: 65 66 67 68 69 70 71 72 73 74, on right: 113 114 115 117
+    123 127 129
+Variable (86)
+    on left: 75 76, on right: 66 70 105
+OptExprs (87)
+    on left: 77 78, on right: 76 78
+LimitedVar (88)
+    on left: 79 80 81 82, on right: 75 80 81 83
+SubVar (89)
+    on left: 83 84, on right: 79 84
+Expression (90)
+    on left: 85 86, on right: 66 76 78 79 84 106 115 118 127 128 129
+RelOp (91)
+    on left: 87 88 89 90 91 92, on right: 86
+SimpleExpression (92)
+    on left: 93 94 95, on right: 85 86 95
+AddOp (93)
+    on left: 96 97 98, on right: 95
+Term (94)
+    on left: 99 100, on right: 93 94 95 100
+MultOp (95)
+    on left: 101 102 103 104, on right: 100
+Factor (96)
+    on left: 105 106 107 108 109 110 111, on right: 99 100 108
+CompoundStatement (97)
+    on left: 112, on right: 67
+Statements (98)
+    on left: 113 114, on right: 2 112 114 128
+IfStatement (99)
+    on left: 115, on right: 68
+OptElse (100)
+    on left: 116 117, on right: 115
+CaseStatement (101)
+    on left: 118, on right: 71
+CaseListElements (102)
+    on left: 119, on right: 118 122
+OptCaseListElements (103)
+    on left: 120 121 122, on right: 119
+CaseListElement (104)
+    on left: 123 124, on right: 119
+CaseLabelList (105)
+    on left: 125 126, on right: 123 126
+WhileStatement (106)
+    on left: 127, on right: 69
+RepeatStatement (107)
+    on left: 128, on right: 72
+ForStatement (108)
+    on left: 129, on right: 73
+Direction (109)
+    on left: 130 131, on right: 129
+
+
+State 0
+
+    0 $accept: . Program $end
+
+    PROGRAM_  shift, and go to state 1
+
+    Program  go to state 2
+
+
+State 1
+
+    1 Program: PROGRAM_ . ID_ ';' Block '.'
+
+    ID_  shift, and go to state 3
+
+
+State 2
+
+    0 $accept: Program . $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 Program: PROGRAM_ ID_ . ';' Block '.'
+
+    ';'  shift, and go to state 5
+
+
+State 4
+
+    0 $accept: Program $end .
+
+    $default  accept
+
+
+State 5
+
+    1 Program: PROGRAM_ ID_ ';' . Block '.'
+
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    $default  reduce using rule 3 (OptDefinitionParts)
+
+    Block                 go to state 11
+    OptDefinitionParts    go to state 12
+    DefinitionParts       go to state 13
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 6
+
+    5 DefinitionParts: CONST_ . ConstantDefinitions
+
+    error  shift, and go to state 16
+    ID_    shift, and go to state 17
+
+    ConstantDefinitions  go to state 18
+    ConstantDefinition   go to state 19
+
+
+State 7
+
+   64 FunctionDeclaration: FUNCTION_ . ID_ OptFormalParameters ':' ID_ ';' Block ';'
+
+    ID_  shift, and go to state 20
+
+
+State 8
+
+   51 ProcedureDeclaration: PROCEDURE_ . ID_ OptFormalParameters ';' Block ';'
+
+    ID_  shift, and go to state 21
+
+
+State 9
+
+    7 DefinitionParts: TYPE_ . TypeDefinitions
+
+    error  shift, and go to state 22
+    ID_    shift, and go to state 23
+
+    TypeDefinitions  go to state 24
+    TypeDefinition   go to state 25
+
+
+State 10
+
+    6 DefinitionParts: VAR_ . VariableDeclaration
+
+    error  shift, and go to state 26
+    ID_    shift, and go to state 27
+
+    VariableDeclaration  go to state 28
+
+
+State 11
+
+    1 Program: PROGRAM_ ID_ ';' Block . '.'
+
+    '.'  shift, and go to state 29
+
+
+State 12
+
+    2 Block: OptDefinitionParts . BEGIN_ Statements END_
+
+    BEGIN_  shift, and go to state 30
+
+
+State 13
+
+    4 OptDefinitionParts: DefinitionParts .
+
+    $default  reduce using rule 4 (OptDefinitionParts)
+
+
+State 14
+
+    8 DefinitionParts: ProcedureDeclaration . OptDefinitionParts
+
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    $default  reduce using rule 3 (OptDefinitionParts)
+
+    OptDefinitionParts    go to state 31
+    DefinitionParts       go to state 13
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 15
+
+    9 DefinitionParts: FunctionDeclaration . OptDefinitionParts
+
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    $default  reduce using rule 3 (OptDefinitionParts)
+
+    OptDefinitionParts    go to state 32
+    DefinitionParts       go to state 13
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 16
+
+   14 ConstantDefinition: error . ';'
+
+    ';'  shift, and go to state 33
+
+
+State 17
+
+   13 ConstantDefinition: ID_ . '=' Constant ';'
+
+    '='  shift, and go to state 34
+
+
+State 18
+
+    5 DefinitionParts: CONST_ ConstantDefinitions .
+
+    $default  reduce using rule 5 (DefinitionParts)
+
+
+State 19
+
+   10 ConstantDefinitions: ConstantDefinition . OptConstantDefinitions
+
+    error       shift, and go to state 16
+    ID_         shift, and go to state 17
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    BEGIN_  reduce using rule 3 (OptDefinitionParts)
+
+    OptDefinitionParts      go to state 35
+    DefinitionParts         go to state 13
+    ConstantDefinitions     go to state 36
+    OptConstantDefinitions  go to state 37
+    ConstantDefinition      go to state 19
+    ProcedureDeclaration    go to state 14
+    FunctionDeclaration     go to state 15
+
+
+State 20
+
+   64 FunctionDeclaration: FUNCTION_ ID_ . OptFormalParameters ':' ID_ ';' Block ';'
+
+    '('  shift, and go to state 38
+
+    $default  reduce using rule 52 (OptFormalParameters)
+
+    OptFormalParameters  go to state 39
+
+
+State 21
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ . OptFormalParameters ';' Block ';'
+
+    '('  shift, and go to state 38
+
+    $default  reduce using rule 52 (OptFormalParameters)
+
+    OptFormalParameters  go to state 40
+
+
+State 22
+
+   19 TypeDefinition: error . ';'
+
+    ';'  shift, and go to state 41
+
+
+State 23
+
+   18 TypeDefinition: ID_ . '=' Type ';'
+
+    '='  shift, and go to state 42
+
+
+State 24
+
+    7 DefinitionParts: TYPE_ TypeDefinitions .
+
+    $default  reduce using rule 7 (DefinitionParts)
+
+
+State 25
+
+   15 TypeDefinitions: TypeDefinition . OptTypeDefinitions
+
+    error       shift, and go to state 22
+    ID_         shift, and go to state 23
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    BEGIN_  reduce using rule 3 (OptDefinitionParts)
+
+    OptDefinitionParts    go to state 43
+    DefinitionParts       go to state 13
+    TypeDefinitions       go to state 44
+    OptTypeDefinitions    go to state 45
+    TypeDefinition        go to state 25
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 26
+
+   22 VariableDeclaration: error . ';'
+
+    ';'  shift, and go to state 46
+
+
+State 27
+
+   20 VariableDeclaration: ID_ . ':' Type ';' OptVariableDeclarations
+   21                    | ID_ . ',' VariableDeclaration
+
+    ','  shift, and go to state 47
+    ':'  shift, and go to state 48
+
+
+State 28
+
+    6 DefinitionParts: VAR_ VariableDeclaration .
+
+    $default  reduce using rule 6 (DefinitionParts)
+
+
+State 29
+
+    1 Program: PROGRAM_ ID_ ';' Block '.' .
+
+    $default  reduce using rule 1 (Program)
+
+
+State 30
+
+    2 Block: OptDefinitionParts BEGIN_ . Statements END_
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'   reduce using rule 65 (Statement)
+    END_  reduce using rule 65 (Statement)
+
+    Statement          go to state 57
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    Statements         go to state 62
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 31
+
+    8 DefinitionParts: ProcedureDeclaration OptDefinitionParts .
+
+    $default  reduce using rule 8 (DefinitionParts)
+
+
+State 32
+
+    9 DefinitionParts: FunctionDeclaration OptDefinitionParts .
+
+    $default  reduce using rule 9 (DefinitionParts)
+
+
+State 33
+
+   14 ConstantDefinition: error ';' .
+
+    $default  reduce using rule 14 (ConstantDefinition)
+
+
+State 34
+
+   13 ConstantDefinition: ID_ '=' . Constant ';'
+
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 70
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+
+    Constant          go to state 73
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+
+
+State 35
+
+   12 OptConstantDefinitions: OptDefinitionParts .
+
+    $default  reduce using rule 12 (OptConstantDefinitions)
+
+
+State 36
+
+   11 OptConstantDefinitions: ConstantDefinitions .
+
+    $default  reduce using rule 11 (OptConstantDefinitions)
+
+
+State 37
+
+   10 ConstantDefinitions: ConstantDefinition OptConstantDefinitions .
+
+    $default  reduce using rule 10 (ConstantDefinitions)
+
+
+State 38
+
+   53 OptFormalParameters: '(' . ParameterGroup ')'
+   54                    | '(' . error ')'
+
+    error  shift, and go to state 76
+    VAR_   shift, and go to state 77
+
+    ID_  reduce using rule 62 (OptVar)
+
+    ParameterGroup  go to state 78
+    OptVar          go to state 79
+
+
+State 39
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters . ':' ID_ ';' Block ';'
+
+    ':'  shift, and go to state 80
+
+
+State 40
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ OptFormalParameters . ';' Block ';'
+
+    ';'  shift, and go to state 81
+
+
+State 41
+
+   19 TypeDefinition: error ';' .
+
+    $default  reduce using rule 19 (TypeDefinition)
+
+
+State 42
+
+   18 TypeDefinition: ID_ '=' . Type ';'
+
+    error    shift, and go to state 82
+    INT_     shift, and go to state 68
+    TEXT_    shift, and go to state 69
+    ID_      shift, and go to state 83
+    '+'      shift, and go to state 71
+    '-'      shift, and go to state 72
+    '^'      shift, and go to state 84
+    '('      shift, and go to state 85
+    ARRAY_   shift, and go to state 86
+    RECORD_  shift, and go to state 87
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    Type              go to state 89
+    SimpleType        go to state 90
+
+
+State 43
+
+   17 OptTypeDefinitions: OptDefinitionParts .
+
+    $default  reduce using rule 17 (OptTypeDefinitions)
+
+
+State 44
+
+   16 OptTypeDefinitions: TypeDefinitions .
+
+    $default  reduce using rule 16 (OptTypeDefinitions)
+
+
+State 45
+
+   15 TypeDefinitions: TypeDefinition OptTypeDefinitions .
+
+    $default  reduce using rule 15 (TypeDefinitions)
+
+
+State 46
+
+   22 VariableDeclaration: error ';' .
+
+    $default  reduce using rule 22 (VariableDeclaration)
+
+
+State 47
+
+   21 VariableDeclaration: ID_ ',' . VariableDeclaration
+
+    error  shift, and go to state 26
+    ID_    shift, and go to state 27
+
+    VariableDeclaration  go to state 91
+
+
+State 48
+
+   20 VariableDeclaration: ID_ ':' . Type ';' OptVariableDeclarations
+
+    error    shift, and go to state 82
+    INT_     shift, and go to state 68
+    TEXT_    shift, and go to state 69
+    ID_      shift, and go to state 83
+    '+'      shift, and go to state 71
+    '-'      shift, and go to state 72
+    '^'      shift, and go to state 84
+    '('      shift, and go to state 85
+    ARRAY_   shift, and go to state 86
+    RECORD_  shift, and go to state 87
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    Type              go to state 92
+    SimpleType        go to state 90
+
+
+State 49
+
+   74 Statement: error .
+
+    $default  reduce using rule 74 (Statement)
+
+
+State 50
+
+   76 Variable: ID_ . '(' Expression OptExprs ')'
+   82 LimitedVar: ID_ .
+
+    '('  shift, and go to state 93
+
+    $default  reduce using rule 82 (LimitedVar)
+
+
+State 51
+
+  112 CompoundStatement: BEGIN_ . Statements END_
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'   reduce using rule 65 (Statement)
+    END_  reduce using rule 65 (Statement)
+
+    Statement          go to state 57
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    Statements         go to state 94
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 52
+
+  118 CaseStatement: CASE_ . Expression OF_ CaseListElements END_
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 102
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 53
+
+  129 ForStatement: FOR_ . ID_ COLON_EQ_ Expression Direction Expression DO_ Statement
+
+    ID_  shift, and go to state 106
+
+
+State 54
+
+  115 IfStatement: IF_ . Expression THEN_ Statement OptElse
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 107
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 55
+
+  128 RepeatStatement: REPEAT_ . Statements UNTIL_ Expression
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 57
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    Statements         go to state 108
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 56
+
+  127 WhileStatement: WHILE_ . Expression DO_ Statement
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 109
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 57
+
+  113 Statements: Statement .
+  114           | Statement . ';' Statements
+
+    ';'  shift, and go to state 110
+
+    $default  reduce using rule 113 (Statements)
+
+
+State 58
+
+   66 Statement: Variable . COLON_EQ_ Expression
+   70          | Variable .
+
+    COLON_EQ_  shift, and go to state 111
+
+    $default  reduce using rule 70 (Statement)
+
+
+State 59
+
+   75 Variable: LimitedVar .
+   80 LimitedVar: LimitedVar . '.' ID_
+   81           | LimitedVar . '^'
+   83 SubVar: LimitedVar . '['
+
+    '.'  shift, and go to state 112
+    '^'  shift, and go to state 113
+    '['  shift, and go to state 114
+
+    $default  reduce using rule 75 (Variable)
+
+
+State 60
+
+   79 LimitedVar: SubVar . Expression ']'
+   84 SubVar: SubVar . Expression ','
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 115
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 61
+
+   67 Statement: CompoundStatement .
+
+    $default  reduce using rule 67 (Statement)
+
+
+State 62
+
+    2 Block: OptDefinitionParts BEGIN_ Statements . END_
+
+    END_  shift, and go to state 116
+
+
+State 63
+
+   68 Statement: IfStatement .
+
+    $default  reduce using rule 68 (Statement)
+
+
+State 64
+
+   71 Statement: CaseStatement .
+
+    $default  reduce using rule 71 (Statement)
+
+
+State 65
+
+   69 Statement: WhileStatement .
+
+    $default  reduce using rule 69 (Statement)
+
+
+State 66
+
+   72 Statement: RepeatStatement .
+
+    $default  reduce using rule 72 (Statement)
+
+
+State 67
+
+   73 Statement: ForStatement .
+
+    $default  reduce using rule 73 (Statement)
+
+
+State 68
+
+   28 UnsignedConstant: INT_ .
+
+    $default  reduce using rule 28 (UnsignedConstant)
+
+
+State 69
+
+   27 Constant: TEXT_ .
+
+    $default  reduce using rule 27 (Constant)
+
+
+State 70
+
+   29 UnsignedConstant: ID_ .
+
+    $default  reduce using rule 29 (UnsignedConstant)
+
+
+State 71
+
+   30 Sign: '+' .
+
+    $default  reduce using rule 30 (Sign)
+
+
+State 72
+
+   31 Sign: '-' .
+
+    $default  reduce using rule 31 (Sign)
+
+
+State 73
+
+   13 ConstantDefinition: ID_ '=' Constant . ';'
+
+    ';'  shift, and go to state 117
+
+
+State 74
+
+   25 Constant: UnsignedConstant .
+
+    $default  reduce using rule 25 (Constant)
+
+
+State 75
+
+   26 Constant: Sign . UnsignedConstant
+
+    INT_  shift, and go to state 68
+    ID_   shift, and go to state 70
+
+    UnsignedConstant  go to state 118
+
+
+State 76
+
+   54 OptFormalParameters: '(' error . ')'
+
+    ')'  shift, and go to state 119
+
+
+State 77
+
+   63 OptVar: VAR_ .
+
+    $default  reduce using rule 63 (OptVar)
+
+
+State 78
+
+   53 OptFormalParameters: '(' ParameterGroup . ')'
+
+    ')'  shift, and go to state 120
+
+
+State 79
+
+   56 ParameterGroup: OptVar . $@1 Parameters
+
+    $default  reduce using rule 55 ($@1)
+
+    $@1  go to state 121
+
+
+State 80
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' . ID_ ';' Block ';'
+
+    ID_  shift, and go to state 122
+
+
+State 81
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ OptFormalParameters ';' . Block ';'
+
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    $default  reduce using rule 3 (OptDefinitionParts)
+
+    Block                 go to state 123
+    OptDefinitionParts    go to state 12
+    DefinitionParts       go to state 13
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 82
+
+   37 Type: error .
+
+    $default  reduce using rule 37 (Type)
+
+
+State 83
+
+   29 UnsignedConstant: ID_ .
+   40 SimpleType: ID_ .
+
+    DOT_DOT_  reduce using rule 29 (UnsignedConstant)
+    $default  reduce using rule 40 (SimpleType)
+
+
+State 84
+
+   36 Type: '^' . ID_
+
+    ID_  shift, and go to state 124
+
+
+State 85
+
+   42 SimpleType: '(' . IdList ')'
+
+    ID_  shift, and go to state 125
+
+    IdList  go to state 126
+
+
+State 86
+
+   33 Type: ARRAY_ . '[' SimpleType EltType
+
+    '['  shift, and go to state 127
+
+
+State 87
+
+   34 Type: RECORD_ . FieldList END_
+   35     | RECORD_ . END_
+
+    error  shift, and go to state 128
+    ID_    shift, and go to state 129
+    END_   shift, and go to state 130
+
+    FieldList  go to state 131
+
+
+State 88
+
+   41 SimpleType: Constant . DOT_DOT_ Constant
+
+    DOT_DOT_  shift, and go to state 132
+
+
+State 89
+
+   18 TypeDefinition: ID_ '=' Type . ';'
+
+    ';'  shift, and go to state 133
+
+
+State 90
+
+   32 Type: SimpleType .
+
+    $default  reduce using rule 32 (Type)
+
+
+State 91
+
+   21 VariableDeclaration: ID_ ',' VariableDeclaration .
+
+    $default  reduce using rule 21 (VariableDeclaration)
+
+
+State 92
+
+   20 VariableDeclaration: ID_ ':' Type . ';' OptVariableDeclarations
+
+    ';'  shift, and go to state 134
+
+
+State 93
+
+   76 Variable: ID_ '(' . Expression OptExprs ')'
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 135
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 94
+
+  112 CompoundStatement: BEGIN_ Statements . END_
+
+    END_  shift, and go to state 136
+
+
+State 95
+
+  109 Factor: INT_ .
+
+    $default  reduce using rule 109 (Factor)
+
+
+State 96
+
+  110 Factor: TEXT_ .
+
+    $default  reduce using rule 110 (Factor)
+
+
+State 97
+
+  108 Factor: NOT_ . Factor
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Variable    go to state 101
+    LimitedVar  go to state 59
+    SubVar      go to state 60
+    Factor      go to state 137
+
+
+State 98
+
+  106 Factor: '(' . Expression ')'
+  107       | '(' . error ')'
+
+    error  shift, and go to state 138
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 139
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 99
+
+  111 Factor: NIL_ .
+
+    $default  reduce using rule 111 (Factor)
+
+
+State 100
+
+   94 SimpleExpression: Sign . Term
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Variable    go to state 101
+    LimitedVar  go to state 59
+    SubVar      go to state 60
+    Term        go to state 140
+    Factor      go to state 105
+
+
+State 101
+
+  105 Factor: Variable .
+
+    $default  reduce using rule 105 (Factor)
+
+
+State 102
+
+  118 CaseStatement: CASE_ Expression . OF_ CaseListElements END_
+
+    OF_  shift, and go to state 141
+
+
+State 103
+
+   85 Expression: SimpleExpression .
+   86           | SimpleExpression . RelOp SimpleExpression
+   95 SimpleExpression: SimpleExpression . AddOp Term
+
+    GE_  shift, and go to state 142
+    LE_  shift, and go to state 143
+    NE_  shift, and go to state 144
+    OR_  shift, and go to state 145
+    '+'  shift, and go to state 146
+    '-'  shift, and go to state 147
+    '<'  shift, and go to state 148
+    '>'  shift, and go to state 149
+    '='  shift, and go to state 150
+
+    $default  reduce using rule 85 (Expression)
+
+    RelOp  go to state 151
+    AddOp  go to state 152
+
+
+State 104
+
+   93 SimpleExpression: Term .
+  100 Term: Term . MultOp Factor
+
+    AND_  shift, and go to state 153
+    DIV_  shift, and go to state 154
+    MOD_  shift, and go to state 155
+    '*'   shift, and go to state 156
+
+    $default  reduce using rule 93 (SimpleExpression)
+
+    MultOp  go to state 157
+
+
+State 105
+
+   99 Term: Factor .
+
+    $default  reduce using rule 99 (Term)
+
+
+State 106
+
+  129 ForStatement: FOR_ ID_ . COLON_EQ_ Expression Direction Expression DO_ Statement
+
+    COLON_EQ_  shift, and go to state 158
+
+
+State 107
+
+  115 IfStatement: IF_ Expression . THEN_ Statement OptElse
+
+    THEN_  shift, and go to state 159
+
+
+State 108
+
+  128 RepeatStatement: REPEAT_ Statements . UNTIL_ Expression
+
+    UNTIL_  shift, and go to state 160
+
+
+State 109
+
+  127 WhileStatement: WHILE_ Expression . DO_ Statement
+
+    DO_  shift, and go to state 161
+
+
+State 110
+
+  114 Statements: Statement ';' . Statements
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    END_    reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 57
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    Statements         go to state 162
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 111
+
+   66 Statement: Variable COLON_EQ_ . Expression
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 163
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 112
+
+   80 LimitedVar: LimitedVar '.' . ID_
+
+    ID_  shift, and go to state 164
+
+
+State 113
+
+   81 LimitedVar: LimitedVar '^' .
+
+    $default  reduce using rule 81 (LimitedVar)
+
+
+State 114
+
+   83 SubVar: LimitedVar '[' .
+
+    $default  reduce using rule 83 (SubVar)
+
+
+State 115
+
+   79 LimitedVar: SubVar Expression . ']'
+   84 SubVar: SubVar Expression . ','
+
+    ']'  shift, and go to state 165
+    ','  shift, and go to state 166
+
+
+State 116
+
+    2 Block: OptDefinitionParts BEGIN_ Statements END_ .
+
+    $default  reduce using rule 2 (Block)
+
+
+State 117
+
+   13 ConstantDefinition: ID_ '=' Constant ';' .
+
+    $default  reduce using rule 13 (ConstantDefinition)
+
+
+State 118
+
+   26 Constant: Sign UnsignedConstant .
+
+    $default  reduce using rule 26 (Constant)
+
+
+State 119
+
+   54 OptFormalParameters: '(' error ')' .
+
+    $default  reduce using rule 54 (OptFormalParameters)
+
+
+State 120
+
+   53 OptFormalParameters: '(' ParameterGroup ')' .
+
+    $default  reduce using rule 53 (OptFormalParameters)
+
+
+State 121
+
+   56 ParameterGroup: OptVar $@1 . Parameters
+
+    ID_  shift, and go to state 167
+
+    Parameters  go to state 168
+
+
+State 122
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' ID_ . ';' Block ';'
+
+    ';'  shift, and go to state 169
+
+
+State 123
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ OptFormalParameters ';' Block . ';'
+
+    ';'  shift, and go to state 170
+
+
+State 124
+
+   36 Type: '^' ID_ .
+
+    $default  reduce using rule 36 (Type)
+
+
+State 125
+
+   43 IdList: ID_ .
+   44       | ID_ . ',' IdList
+
+    ','  shift, and go to state 171
+
+    $default  reduce using rule 43 (IdList)
+
+
+State 126
+
+   42 SimpleType: '(' IdList . ')'
+
+    ')'  shift, and go to state 172
+
+
+State 127
+
+   33 Type: ARRAY_ '[' . SimpleType EltType
+
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 83
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 85
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    SimpleType        go to state 173
+
+
+State 128
+
+   47 FieldList: error .
+
+    $default  reduce using rule 47 (FieldList)
+
+
+State 129
+
+   45 FieldList: ID_ . ':' Type OptFieldList
+   46          | ID_ . ',' FieldList
+
+    ','  shift, and go to state 174
+    ':'  shift, and go to state 175
+
+
+State 130
+
+   35 Type: RECORD_ END_ .
+
+    $default  reduce using rule 35 (Type)
+
+
+State 131
+
+   34 Type: RECORD_ FieldList . END_
+
+    END_  shift, and go to state 176
+
+
+State 132
+
+   41 SimpleType: Constant DOT_DOT_ . Constant
+
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 70
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+
+    Constant          go to state 177
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+
+
+State 133
+
+   18 TypeDefinition: ID_ '=' Type ';' .
+
+    $default  reduce using rule 18 (TypeDefinition)
+
+
+State 134
+
+   20 VariableDeclaration: ID_ ':' Type ';' . OptVariableDeclarations
+
+    error       shift, and go to state 26
+    ID_         shift, and go to state 27
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    BEGIN_  reduce using rule 3 (OptDefinitionParts)
+
+    OptDefinitionParts       go to state 178
+    DefinitionParts          go to state 13
+    VariableDeclaration      go to state 179
+    OptVariableDeclarations  go to state 180
+    ProcedureDeclaration     go to state 14
+    FunctionDeclaration      go to state 15
+
+
+State 135
+
+   76 Variable: ID_ '(' Expression . OptExprs ')'
+
+    ','  shift, and go to state 181
+
+    $default  reduce using rule 77 (OptExprs)
+
+    OptExprs  go to state 182
+
+
+State 136
+
+  112 CompoundStatement: BEGIN_ Statements END_ .
+
+    $default  reduce using rule 112 (CompoundStatement)
+
+
+State 137
+
+  108 Factor: NOT_ Factor .
+
+    $default  reduce using rule 108 (Factor)
+
+
+State 138
+
+  107 Factor: '(' error . ')'
+
+    ')'  shift, and go to state 183
+
+
+State 139
+
+  106 Factor: '(' Expression . ')'
+
+    ')'  shift, and go to state 184
+
+
+State 140
+
+   94 SimpleExpression: Sign Term .
+  100 Term: Term . MultOp Factor
+
+    AND_  shift, and go to state 153
+    DIV_  shift, and go to state 154
+    MOD_  shift, and go to state 155
+    '*'   shift, and go to state 156
+
+    $default  reduce using rule 94 (SimpleExpression)
+
+    MultOp  go to state 157
+
+
+State 141
+
+  118 CaseStatement: CASE_ Expression OF_ . CaseListElements END_
+
+    error  shift, and go to state 185
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 70
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+
+    Constant          go to state 186
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    CaseListElements  go to state 187
+    CaseListElement   go to state 188
+    CaseLabelList     go to state 189
+
+
+State 142
+
+   91 RelOp: GE_ .
+
+    $default  reduce using rule 91 (RelOp)
+
+
+State 143
+
+   90 RelOp: LE_ .
+
+    $default  reduce using rule 90 (RelOp)
+
+
+State 144
+
+   88 RelOp: NE_ .
+
+    $default  reduce using rule 88 (RelOp)
+
+
+State 145
+
+   98 AddOp: OR_ .
+
+    $default  reduce using rule 98 (AddOp)
+
+
+State 146
+
+   96 AddOp: '+' .
+
+    $default  reduce using rule 96 (AddOp)
+
+
+State 147
+
+   97 AddOp: '-' .
+
+    $default  reduce using rule 97 (AddOp)
+
+
+State 148
+
+   89 RelOp: '<' .
+
+    $default  reduce using rule 89 (RelOp)
+
+
+State 149
+
+   92 RelOp: '>' .
+
+    $default  reduce using rule 92 (RelOp)
+
+
+State 150
+
+   87 RelOp: '=' .
+
+    $default  reduce using rule 87 (RelOp)
+
+
+State 151
+
+   86 Expression: SimpleExpression RelOp . SimpleExpression
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    SimpleExpression  go to state 190
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 152
+
+   95 SimpleExpression: SimpleExpression AddOp . Term
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Variable    go to state 101
+    LimitedVar  go to state 59
+    SubVar      go to state 60
+    Term        go to state 191
+    Factor      go to state 105
+
+
+State 153
+
+  104 MultOp: AND_ .
+
+    $default  reduce using rule 104 (MultOp)
+
+
+State 154
+
+  102 MultOp: DIV_ .
+
+    $default  reduce using rule 102 (MultOp)
+
+
+State 155
+
+  103 MultOp: MOD_ .
+
+    $default  reduce using rule 103 (MultOp)
+
+
+State 156
+
+  101 MultOp: '*' .
+
+    $default  reduce using rule 101 (MultOp)
+
+
+State 157
+
+  100 Term: Term MultOp . Factor
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Variable    go to state 101
+    LimitedVar  go to state 59
+    SubVar      go to state 60
+    Factor      go to state 192
+
+
+State 158
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ . Expression Direction Expression DO_ Statement
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 193
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 159
+
+  115 IfStatement: IF_ Expression THEN_ . Statement OptElse
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    ELSE_   reduce using rule 65 (Statement)
+    END_    reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 194
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 160
+
+  128 RepeatStatement: REPEAT_ Statements UNTIL_ . Expression
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 195
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 161
+
+  127 WhileStatement: WHILE_ Expression DO_ . Statement
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    ELSE_   reduce using rule 65 (Statement)
+    END_    reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 196
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 162
+
+  114 Statements: Statement ';' Statements .
+
+    $default  reduce using rule 114 (Statements)
+
+
+State 163
+
+   66 Statement: Variable COLON_EQ_ Expression .
+
+    $default  reduce using rule 66 (Statement)
+
+
+State 164
+
+   80 LimitedVar: LimitedVar '.' ID_ .
+
+    $default  reduce using rule 80 (LimitedVar)
+
+
+State 165
+
+   79 LimitedVar: SubVar Expression ']' .
+
+    $default  reduce using rule 79 (LimitedVar)
+
+
+State 166
+
+   84 SubVar: SubVar Expression ',' .
+
+    $default  reduce using rule 84 (SubVar)
+
+
+State 167
+
+   58 Parameters: ID_ . ':' ID_ @2 OptParameterGroup
+   59           | ID_ . ',' Parameters
+
+    ','  shift, and go to state 197
+    ':'  shift, and go to state 198
+
+
+State 168
+
+   56 ParameterGroup: OptVar $@1 Parameters .
+
+    $default  reduce using rule 56 (ParameterGroup)
+
+
+State 169
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' ID_ ';' . Block ';'
+
+    CONST_      shift, and go to state 6
+    FUNCTION_   shift, and go to state 7
+    PROCEDURE_  shift, and go to state 8
+    TYPE_       shift, and go to state 9
+    VAR_        shift, and go to state 10
+
+    $default  reduce using rule 3 (OptDefinitionParts)
+
+    Block                 go to state 199
+    OptDefinitionParts    go to state 12
+    DefinitionParts       go to state 13
+    ProcedureDeclaration  go to state 14
+    FunctionDeclaration   go to state 15
+
+
+State 170
+
+   51 ProcedureDeclaration: PROCEDURE_ ID_ OptFormalParameters ';' Block ';' .
+
+    $default  reduce using rule 51 (ProcedureDeclaration)
+
+
+State 171
+
+   44 IdList: ID_ ',' . IdList
+
+    ID_  shift, and go to state 125
+
+    IdList  go to state 200
+
+
+State 172
+
+   42 SimpleType: '(' IdList ')' .
+
+    $default  reduce using rule 42 (SimpleType)
+
+
+State 173
+
+   33 Type: ARRAY_ '[' SimpleType . EltType
+
+    ']'  shift, and go to state 201
+    ','  shift, and go to state 202
+
+    EltType  go to state 203
+
+
+State 174
+
+   46 FieldList: ID_ ',' . FieldList
+
+    error  shift, and go to state 128
+    ID_    shift, and go to state 129
+
+    FieldList  go to state 204
+
+
+State 175
+
+   45 FieldList: ID_ ':' . Type OptFieldList
+
+    error    shift, and go to state 82
+    INT_     shift, and go to state 68
+    TEXT_    shift, and go to state 69
+    ID_      shift, and go to state 83
+    '+'      shift, and go to state 71
+    '-'      shift, and go to state 72
+    '^'      shift, and go to state 84
+    '('      shift, and go to state 85
+    ARRAY_   shift, and go to state 86
+    RECORD_  shift, and go to state 87
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    Type              go to state 205
+    SimpleType        go to state 90
+
+
+State 176
+
+   34 Type: RECORD_ FieldList END_ .
+
+    $default  reduce using rule 34 (Type)
+
+
+State 177
+
+   41 SimpleType: Constant DOT_DOT_ Constant .
+
+    $default  reduce using rule 41 (SimpleType)
+
+
+State 178
+
+   24 OptVariableDeclarations: OptDefinitionParts .
+
+    $default  reduce using rule 24 (OptVariableDeclarations)
+
+
+State 179
+
+   23 OptVariableDeclarations: VariableDeclaration .
+
+    $default  reduce using rule 23 (OptVariableDeclarations)
+
+
+State 180
+
+   20 VariableDeclaration: ID_ ':' Type ';' OptVariableDeclarations .
+
+    $default  reduce using rule 20 (VariableDeclaration)
+
+
+State 181
+
+   78 OptExprs: ',' . Expression OptExprs
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 206
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 182
+
+   76 Variable: ID_ '(' Expression OptExprs . ')'
+
+    ')'  shift, and go to state 207
+
+
+State 183
+
+  107 Factor: '(' error ')' .
+
+    $default  reduce using rule 107 (Factor)
+
+
+State 184
+
+  106 Factor: '(' Expression ')' .
+
+    $default  reduce using rule 106 (Factor)
+
+
+State 185
+
+  124 CaseListElement: error .
+
+    $default  reduce using rule 124 (CaseListElement)
+
+
+State 186
+
+  125 CaseLabelList: Constant .
+  126              | Constant . ',' CaseLabelList
+
+    ','  shift, and go to state 208
+
+    $default  reduce using rule 125 (CaseLabelList)
+
+
+State 187
+
+  118 CaseStatement: CASE_ Expression OF_ CaseListElements . END_
+
+    END_  shift, and go to state 209
+
+
+State 188
+
+  119 CaseListElements: CaseListElement . OptCaseListElements
+
+    ';'  shift, and go to state 210
+
+    $default  reduce using rule 120 (OptCaseListElements)
+
+    OptCaseListElements  go to state 211
+
+
+State 189
+
+  123 CaseListElement: CaseLabelList . ':' Statement
+
+    ':'  shift, and go to state 212
+
+
+State 190
+
+   86 Expression: SimpleExpression RelOp SimpleExpression .
+   95 SimpleExpression: SimpleExpression . AddOp Term
+
+    OR_  shift, and go to state 145
+    '+'  shift, and go to state 146
+    '-'  shift, and go to state 147
+
+    $default  reduce using rule 86 (Expression)
+
+    AddOp  go to state 152
+
+
+State 191
+
+   95 SimpleExpression: SimpleExpression AddOp Term .
+  100 Term: Term . MultOp Factor
+
+    AND_  shift, and go to state 153
+    DIV_  shift, and go to state 154
+    MOD_  shift, and go to state 155
+    '*'   shift, and go to state 156
+
+    $default  reduce using rule 95 (SimpleExpression)
+
+    MultOp  go to state 157
+
+
+State 192
+
+  100 Term: Term MultOp Factor .
+
+    $default  reduce using rule 100 (Term)
+
+
+State 193
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression . Direction Expression DO_ Statement
+
+    DOWNTO_  shift, and go to state 213
+    TO_      shift, and go to state 214
+
+    Direction  go to state 215
+
+
+State 194
+
+  115 IfStatement: IF_ Expression THEN_ Statement . OptElse
+
+    ELSE_  shift, and go to state 216
+
+    ELSE_     [reduce using rule 116 (OptElse)]
+    $default  reduce using rule 116 (OptElse)
+
+    OptElse  go to state 217
+
+
+State 195
+
+  128 RepeatStatement: REPEAT_ Statements UNTIL_ Expression .
+
+    $default  reduce using rule 128 (RepeatStatement)
+
+
+State 196
+
+  127 WhileStatement: WHILE_ Expression DO_ Statement .
+
+    $default  reduce using rule 127 (WhileStatement)
+
+
+State 197
+
+   59 Parameters: ID_ ',' . Parameters
+
+    ID_  shift, and go to state 167
+
+    Parameters  go to state 218
+
+
+State 198
+
+   58 Parameters: ID_ ':' . ID_ @2 OptParameterGroup
+
+    ID_  shift, and go to state 219
+
+
+State 199
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' ID_ ';' Block . ';'
+
+    ';'  shift, and go to state 220
+
+
+State 200
+
+   44 IdList: ID_ ',' IdList .
+
+    $default  reduce using rule 44 (IdList)
+
+
+State 201
+
+   38 EltType: ']' . OF_ Type
+
+    OF_  shift, and go to state 221
+
+
+State 202
+
+   39 EltType: ',' . SimpleType EltType
+
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 83
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 85
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    SimpleType        go to state 222
+
+
+State 203
+
+   33 Type: ARRAY_ '[' SimpleType EltType .
+
+    $default  reduce using rule 33 (Type)
+
+
+State 204
+
+   46 FieldList: ID_ ',' FieldList .
+
+    $default  reduce using rule 46 (FieldList)
+
+
+State 205
+
+   45 FieldList: ID_ ':' Type . OptFieldList
+
+    ';'  shift, and go to state 223
+
+    $default  reduce using rule 48 (OptFieldList)
+
+    OptFieldList  go to state 224
+
+
+State 206
+
+   78 OptExprs: ',' Expression . OptExprs
+
+    ','  shift, and go to state 181
+
+    $default  reduce using rule 77 (OptExprs)
+
+    OptExprs  go to state 225
+
+
+State 207
+
+   76 Variable: ID_ '(' Expression OptExprs ')' .
+
+    $default  reduce using rule 76 (Variable)
+
+
+State 208
+
+  126 CaseLabelList: Constant ',' . CaseLabelList
+
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 70
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+
+    Constant          go to state 186
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    CaseLabelList     go to state 226
+
+
+State 209
+
+  118 CaseStatement: CASE_ Expression OF_ CaseListElements END_ .
+
+    $default  reduce using rule 118 (CaseStatement)
+
+
+State 210
+
+  121 OptCaseListElements: ';' .
+  122                    | ';' . CaseListElements
+
+    error  shift, and go to state 185
+    INT_   shift, and go to state 68
+    TEXT_  shift, and go to state 69
+    ID_    shift, and go to state 70
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+
+    END_  reduce using rule 121 (OptCaseListElements)
+
+    Constant          go to state 186
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    CaseListElements  go to state 227
+    CaseListElement   go to state 188
+    CaseLabelList     go to state 189
+
+
+State 211
+
+  119 CaseListElements: CaseListElement OptCaseListElements .
+
+    $default  reduce using rule 119 (CaseListElements)
+
+
+State 212
+
+  123 CaseListElement: CaseLabelList ':' . Statement
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'   reduce using rule 65 (Statement)
+    END_  reduce using rule 65 (Statement)
+
+    Statement          go to state 228
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 213
+
+  131 Direction: DOWNTO_ .
+
+    $default  reduce using rule 131 (Direction)
+
+
+State 214
+
+  130 Direction: TO_ .
+
+    $default  reduce using rule 130 (Direction)
+
+
+State 215
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression Direction . Expression DO_ Statement
+
+    INT_   shift, and go to state 95
+    TEXT_  shift, and go to state 96
+    ID_    shift, and go to state 50
+    NOT_   shift, and go to state 97
+    '+'    shift, and go to state 71
+    '-'    shift, and go to state 72
+    '('    shift, and go to state 98
+    NIL_   shift, and go to state 99
+
+    Sign              go to state 100
+    Variable          go to state 101
+    LimitedVar        go to state 59
+    SubVar            go to state 60
+    Expression        go to state 229
+    SimpleExpression  go to state 103
+    Term              go to state 104
+    Factor            go to state 105
+
+
+State 216
+
+  117 OptElse: ELSE_ . Statement
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    ELSE_   reduce using rule 65 (Statement)
+    END_    reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 230
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 217
+
+  115 IfStatement: IF_ Expression THEN_ Statement OptElse .
+
+    $default  reduce using rule 115 (IfStatement)
+
+
+State 218
+
+   59 Parameters: ID_ ',' Parameters .
+
+    $default  reduce using rule 59 (Parameters)
+
+
+State 219
+
+   58 Parameters: ID_ ':' ID_ . @2 OptParameterGroup
+
+    $default  reduce using rule 57 (@2)
+
+    @2  go to state 231
+
+
+State 220
+
+   64 FunctionDeclaration: FUNCTION_ ID_ OptFormalParameters ':' ID_ ';' Block ';' .
+
+    $default  reduce using rule 64 (FunctionDeclaration)
+
+
+State 221
+
+   38 EltType: ']' OF_ . Type
+
+    error    shift, and go to state 82
+    INT_     shift, and go to state 68
+    TEXT_    shift, and go to state 69
+    ID_      shift, and go to state 83
+    '+'      shift, and go to state 71
+    '-'      shift, and go to state 72
+    '^'      shift, and go to state 84
+    '('      shift, and go to state 85
+    ARRAY_   shift, and go to state 86
+    RECORD_  shift, and go to state 87
+
+    Constant          go to state 88
+    UnsignedConstant  go to state 74
+    Sign              go to state 75
+    Type              go to state 232
+    SimpleType        go to state 90
+
+
+State 222
+
+   39 EltType: ',' SimpleType . EltType
+
+    ']'  shift, and go to state 201
+    ','  shift, and go to state 202
+
+    EltType  go to state 233
+
+
+State 223
+
+   49 OptFieldList: ';' .
+   50             | ';' . FieldList
+
+    error  shift, and go to state 128
+    ID_    shift, and go to state 129
+
+    END_  reduce using rule 49 (OptFieldList)
+
+    FieldList  go to state 234
+
+
+State 224
+
+   45 FieldList: ID_ ':' Type OptFieldList .
+
+    $default  reduce using rule 45 (FieldList)
+
+
+State 225
+
+   78 OptExprs: ',' Expression OptExprs .
+
+    $default  reduce using rule 78 (OptExprs)
+
+
+State 226
+
+  126 CaseLabelList: Constant ',' CaseLabelList .
+
+    $default  reduce using rule 126 (CaseLabelList)
+
+
+State 227
+
+  122 OptCaseListElements: ';' CaseListElements .
+
+    $default  reduce using rule 122 (OptCaseListElements)
+
+
+State 228
+
+  123 CaseListElement: CaseLabelList ':' Statement .
+
+    $default  reduce using rule 123 (CaseListElement)
+
+
+State 229
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression Direction Expression . DO_ Statement
+
+    DO_  shift, and go to state 235
+
+
+State 230
+
+  117 OptElse: ELSE_ Statement .
+
+    $default  reduce using rule 117 (OptElse)
+
+
+State 231
+
+   58 Parameters: ID_ ':' ID_ @2 . OptParameterGroup
+
+    ';'  shift, and go to state 236
+
+    $default  reduce using rule 60 (OptParameterGroup)
+
+    OptParameterGroup  go to state 237
+
+
+State 232
+
+   38 EltType: ']' OF_ Type .
+
+    $default  reduce using rule 38 (EltType)
+
+
+State 233
+
+   39 EltType: ',' SimpleType EltType .
+
+    $default  reduce using rule 39 (EltType)
+
+
+State 234
+
+   50 OptFieldList: ';' FieldList .
+
+    $default  reduce using rule 50 (OptFieldList)
+
+
+State 235
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression Direction Expression DO_ . Statement
+
+    error    shift, and go to state 49
+    ID_      shift, and go to state 50
+    BEGIN_   shift, and go to state 51
+    CASE_    shift, and go to state 52
+    FOR_     shift, and go to state 53
+    IF_      shift, and go to state 54
+    REPEAT_  shift, and go to state 55
+    WHILE_   shift, and go to state 56
+
+    ';'     reduce using rule 65 (Statement)
+    ELSE_   reduce using rule 65 (Statement)
+    END_    reduce using rule 65 (Statement)
+    UNTIL_  reduce using rule 65 (Statement)
+
+    Statement          go to state 238
+    Variable           go to state 58
+    LimitedVar         go to state 59
+    SubVar             go to state 60
+    CompoundStatement  go to state 61
+    IfStatement        go to state 63
+    CaseStatement      go to state 64
+    WhileStatement     go to state 65
+    RepeatStatement    go to state 66
+    ForStatement       go to state 67
+
+
+State 236
+
+   61 OptParameterGroup: ';' . ParameterGroup
+
+    VAR_  shift, and go to state 77
+
+    $default  reduce using rule 62 (OptVar)
+
+    ParameterGroup  go to state 239
+    OptVar          go to state 79
+
+
+State 237
+
+   58 Parameters: ID_ ':' ID_ @2 OptParameterGroup .
+
+    $default  reduce using rule 58 (Parameters)
+
+
+State 238
+
+  129 ForStatement: FOR_ ID_ COLON_EQ_ Expression Direction Expression DO_ Statement .
+
+    $default  reduce using rule 129 (ForStatement)
+
+
+State 239
+
+   61 OptParameterGroup: ';' ParameterGroup .
+
+    $default  reduce using rule 61 (OptParameterGroup)
